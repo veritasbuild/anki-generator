@@ -17,7 +17,6 @@
       overflow: hidden;
     }
 
-    /* ── Header ── */
     header {
       background: #0f172a;
       color: #f8fafc;
@@ -28,15 +27,10 @@
       justify-content: space-between;
       flex-shrink: 0;
     }
-    header h1 { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.01em; }
+    header h1 { font-size: 0.95rem; font-weight: 600; }
     .header-right { font-size: 0.75rem; color: #64748b; }
 
-    /* ── Main layout ── */
-    .main {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
+    .main { display: flex; flex: 1; overflow: hidden; }
 
     /* ── Left panel ── */
     .left {
@@ -61,7 +55,6 @@
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
-
     .hint { font-size: 0.72rem; color: #94a3b8; }
 
     input[type="password"] {
@@ -72,15 +65,12 @@
       font-size: 0.87rem;
       font-family: monospace;
       color: #0f172a;
-      transition: border-color 0.15s;
       background: #f8fafc;
+      transition: border-color 0.15s;
     }
     input[type="password"]:focus { outline: none; border-color: #6366f1; background: #fff; }
 
-    .model-row {
-      display: flex;
-      gap: 8px;
-    }
+    .model-row { display: flex; gap: 8px; }
     .model-btn {
       flex: 1;
       padding: 6px 10px;
@@ -99,29 +89,39 @@
       font-weight: 600;
     }
 
-    .prompt-wrap {
-      flex: 1;
+    /* Two textarea fields stacked */
+    .textarea-fields {
       display: flex;
       flex-direction: column;
+      gap: 12px;
+      flex: 1;
       min-height: 0;
     }
+    .textarea-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .textarea-field.grow { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
     textarea {
-      flex: 1;
       width: 100%;
-      min-height: 280px;
-      padding: 12px;
+      padding: 10px 12px;
       border: 1px solid #e2e8f0;
       border-radius: 7px;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       font-family: inherit;
       line-height: 1.6;
-      resize: vertical;
       color: #0f172a;
-      transition: border-color 0.15s;
       background: #f8fafc;
+      transition: border-color 0.15s;
+      resize: vertical;
     }
     textarea:focus { outline: none; border-color: #6366f1; background: #fff; }
     textarea::placeholder { color: #94a3b8; }
+
+    #instructions { min-height: 120px; height: 140px; }
+    #content      { min-height: 160px; flex: 1; }
 
     .generate-btn {
       width: 100%;
@@ -138,6 +138,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      flex-shrink: 0;
     }
     .generate-btn:hover:not(:disabled) { background: #4338ca; }
     .generate-btn:active:not(:disabled) { transform: scale(0.99); }
@@ -149,18 +150,13 @@
       text-align: center;
       min-height: 18px;
       line-height: 1.4;
+      flex-shrink: 0;
     }
-    .status.error { color: #dc2626; }
+    .status.error   { color: #dc2626; }
     .status.success { color: #16a34a; }
 
     /* ── Right panel ── */
-    .right {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      overflow: hidden;
-    }
+    .right { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 
     .cards-header {
       padding: 14px 22px;
@@ -171,24 +167,17 @@
       justify-content: space-between;
       flex-shrink: 0;
     }
-    .cards-header h2 { font-size: 0.88rem; font-weight: 600; color: #0f172a; }
+    .cards-header h2 { font-size: 0.88rem; font-weight: 600; }
     .card-meta { display: flex; align-items: center; gap: 12px; }
     .badge {
-      font-size: 0.72rem;
-      font-weight: 600;
-      background: #e0e7ff;
-      color: #4338ca;
-      padding: 2px 9px;
-      border-radius: 999px;
+      font-size: 0.72rem; font-weight: 600;
+      background: #e0e7ff; color: #4338ca;
+      padding: 2px 9px; border-radius: 999px;
     }
     .clear-btn {
-      font-size: 0.72rem;
-      color: #94a3b8;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 2px 6px;
-      border-radius: 4px;
+      font-size: 0.72rem; color: #94a3b8;
+      background: none; border: none; cursor: pointer;
+      padding: 2px 6px; border-radius: 4px;
     }
     .clear-btn:hover { color: #dc2626; background: #fef2f2; }
 
@@ -225,58 +214,26 @@
       transition: box-shadow 0.15s;
     }
     .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-
     .card-body { flex: 1; min-width: 0; }
-
     .card-num {
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 6px;
+      font-size: 0.65rem; font-weight: 700; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;
     }
-
     .card-front {
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #0f172a;
-      line-height: 1.5;
-      margin-bottom: 8px;
-      white-space: pre-wrap;
-      word-break: break-word;
+      font-size: 0.875rem; font-weight: 500; color: #0f172a;
+      line-height: 1.5; margin-bottom: 8px;
+      white-space: pre-wrap; word-break: break-word;
     }
-
-    .divider {
-      height: 1px;
-      background: #f1f5f9;
-      margin-bottom: 8px;
-    }
-
+    .divider { height: 1px; background: #f1f5f9; margin-bottom: 8px; }
     .card-back {
-      font-size: 0.83rem;
-      color: #475569;
-      line-height: 1.55;
-      white-space: pre-wrap;
-      word-break: break-word;
+      font-size: 0.83rem; color: #475569;
+      line-height: 1.55; white-space: pre-wrap; word-break: break-word;
     }
-
     .delete-btn {
-      flex-shrink: 0;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #cbd5e1;
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      transition: all 0.15s;
-      align-self: flex-start;
-      margin-top: 2px;
+      flex-shrink: 0; background: none; border: none; cursor: pointer;
+      color: #cbd5e1; width: 26px; height: 26px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; transition: all 0.15s; align-self: flex-start; margin-top: 2px;
     }
     .delete-btn:hover { color: #dc2626; background: #fef2f2; }
 
@@ -286,27 +243,16 @@
       background: #fff;
       flex-shrink: 0;
     }
-
     .export-btn {
-      width: 100%;
-      padding: 11px;
-      background: #059669;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
+      width: 100%; padding: 11px;
+      background: #059669; color: #fff; border: none;
+      border-radius: 8px; font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
     }
     .export-btn:hover:not(:disabled) { background: #047857; }
     .export-btn:disabled { background: #94a3b8; cursor: not-allowed; }
 
-    /* ── Spinner ── */
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner {
       width: 15px; height: 15px;
@@ -317,7 +263,6 @@
       flex-shrink: 0;
     }
 
-    /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 3px; }
@@ -333,7 +278,6 @@
 
 <div class="main">
 
-  <!-- Left: Input panel -->
   <div class="left">
 
     <div class="field">
@@ -346,28 +290,36 @@
 
     <div class="field">
       <label>Model</label>
-      <div class="model-row">
-        <button class="model-btn active" data-model="claude-opus-4-6" onclick="selectModel(this)">Opus 4.6</button>
-        <button class="model-btn" data-model="claude-sonnet-4-6" onclick="selectModel(this)">Sonnet 4.6</button>
-        <button class="model-btn" data-model="claude-haiku-4-5-20251001" onclick="selectModel(this)">Haiku 4.5</button>
+      <div class="model-row" id="model-row">
+        <button class="model-btn active" data-model="claude-opus-4-6"           onclick="selectModel(this)">Opus 4.6</button>
+        <button class="model-btn"        data-model="claude-sonnet-4-6"         onclick="selectModel(this)">Sonnet 4.6</button>
+        <button class="model-btn"        data-model="claude-haiku-4-5-20251001" onclick="selectModel(this)">Haiku 4.5</button>
       </div>
     </div>
 
-    <div class="field prompt-wrap">
-      <div class="field-row">
-        <label for="prompt">Your Spaced Repetition Prompt</label>
-        <span class="hint" id="char-count">0 chars</span>
+    <div class="textarea-fields">
+
+      <div class="textarea-field">
+        <div class="field-row">
+          <label for="instructions">Card Generation Instructions</label>
+          <span class="hint">Your SR prompt template</span>
+        </div>
+        <textarea id="instructions" placeholder="Describe how you want the cards made. Examples:
+
+• Create cloze-deletion cards testing one fact each
+• Q: definition-style questions, A: concise answers
+• Front: mechanism or concept, Back: explanation + example
+• Use the Feynman technique — front asks 'explain X', back gives the key points"></textarea>
       </div>
-      <textarea
-        id="prompt"
-        placeholder="Paste your prompt here — include your card-generation instructions and the source material you want turned into flashcards.
 
-Example:
-Create Anki flashcards from the following notes. Each card should test one atomic fact. Front: a question or cloze prompt. Back: the concise answer.
+      <div class="textarea-field grow">
+        <div class="field-row">
+          <label for="content">Content / Material</label>
+          <span class="hint" id="char-count">0 chars</span>
+        </div>
+        <textarea id="content" placeholder="Paste the material you want converted into flashcards — notes, an article, a transcript excerpt, key facts, etc."></textarea>
+      </div>
 
-[paste your content below]
-…"
-      ></textarea>
     </div>
 
     <button class="generate-btn" id="generate-btn" onclick="generateCards()">
@@ -377,7 +329,6 @@ Create Anki flashcards from the following notes. Each card should test one atomi
 
   </div>
 
-  <!-- Right: Cards panel -->
   <div class="right">
 
     <div class="cards-header">
@@ -405,53 +356,49 @@ Create Anki flashcards from the following notes. Each card should test one atomi
 </div>
 
 <script>
-  // ── State ──────────────────────────────────────────────────────────────
   let cards = [];
   let selectedModel = 'claude-opus-4-6';
 
-  // ── Persist API key ────────────────────────────────────────────────────
+  // ── Persist API key ──────────────────────────────────────────────────────
   const keyInput = document.getElementById('api-key');
-  keyInput.value = localStorage.getItem('anki_api_key') || '';
+  keyInput.value = localStorage.getItem('anki_anthropic_key') || '';
   keyInput.addEventListener('input', () => {
-    localStorage.setItem('anki_api_key', keyInput.value);
+    localStorage.setItem('anki_anthropic_key', keyInput.value);
   });
 
-  // ── Char counter ───────────────────────────────────────────────────────
-  const promptEl = document.getElementById('prompt');
-  promptEl.addEventListener('input', () => {
+  // ── Char counter ─────────────────────────────────────────────────────────
+  const contentEl = document.getElementById('content');
+  contentEl.addEventListener('input', () => {
     document.getElementById('char-count').textContent =
-      promptEl.value.length.toLocaleString() + ' chars';
+      contentEl.value.length.toLocaleString() + ' chars';
   });
 
-  // ── Model selection ────────────────────────────────────────────────────
+  // ── Model selection ──────────────────────────────────────────────────────
   function selectModel(btn) {
-    document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#model-row .model-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     selectedModel = btn.dataset.model;
   }
 
-  // ── Status ─────────────────────────────────────────────────────────────
+  // ── Status ───────────────────────────────────────────────────────────────
   function setStatus(msg, type = '') {
     const el = document.getElementById('status');
     el.textContent = msg;
     el.className = 'status' + (type ? ' ' + type : '');
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────
+  // ── Render cards ─────────────────────────────────────────────────────────
   function renderCards() {
     const list = document.getElementById('cards-list');
     const count = cards.length;
-
-    document.getElementById('card-count').textContent =
-      count + (count === 1 ? ' card' : ' cards');
+    document.getElementById('card-count').textContent = count + (count === 1 ? ' card' : ' cards');
     document.getElementById('export-btn').disabled = count === 0;
 
     if (count === 0) {
-      list.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">🃏</div>
-          <p>Cards will appear here after generation.<br>Delete any you don't want, then export.</p>
-        </div>`;
+      list.innerHTML = `<div class="empty-state">
+        <div class="empty-icon">🃏</div>
+        <p>Cards will appear here after generation.<br>Delete any you don't want, then export.</p>
+      </div>`;
       return;
     }
 
@@ -470,43 +417,43 @@ Create Anki flashcards from the following notes. Each card should test one atomi
 
   function escHtml(s) {
     return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  // ── Delete / clear ─────────────────────────────────────────────────────
+  // ── Delete / clear ───────────────────────────────────────────────────────
   function deleteCard(i) {
     cards.splice(i, 1);
     renderCards();
-    if (cards.length > 0) {
-      setStatus(`${cards.length} card${cards.length !== 1 ? 's' : ''} remaining.`, 'success');
-    } else {
-      setStatus('');
-    }
+    setStatus(cards.length > 0 ? `${cards.length} card${cards.length !== 1 ? 's' : ''} remaining.` : '', cards.length > 0 ? 'success' : '');
   }
 
   function clearAll() {
-    if (cards.length === 0) return;
+    if (!cards.length) return;
     if (!confirm(`Delete all ${cards.length} cards?`)) return;
     cards = [];
     renderCards();
     setStatus('');
   }
 
-  // ── Generate ───────────────────────────────────────────────────────────
+  // ── Generate ─────────────────────────────────────────────────────────────
   async function generateCards() {
-    const apiKey = keyInput.value.trim();
-    const prompt = promptEl.value.trim();
-    const btn = document.getElementById('generate-btn');
+    const apiKey      = keyInput.value.trim();
+    const instructions = document.getElementById('instructions').value.trim();
+    const content     = contentEl.value.trim();
+    const btn         = document.getElementById('generate-btn');
 
-    if (!apiKey) { setStatus('Enter your Anthropic API key first.', 'error'); return; }
-    if (!prompt) { setStatus('Paste your prompt / content first.', 'error'); return; }
+    if (!apiKey)   { setStatus('Enter your Anthropic API key first.', 'error'); return; }
+    if (!content)  { setStatus('Paste content / material first.', 'error'); return; }
 
     btn.disabled = true;
     btn.innerHTML = '<div class="spinner"></div>Generating…';
     setStatus('Calling Claude API…');
+
+    // Build user message combining instructions + content
+    const userMsg = instructions
+      ? `${instructions}\n\n---\n\n${content}`
+      : content;
 
     try {
       const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -520,15 +467,30 @@ Create Anki flashcards from the following notes. Each card should test one atomi
         body: JSON.stringify({
           model: selectedModel,
           max_tokens: 8192,
-          system: `You are a precise spaced repetition flashcard generator.
-
-The user will give you their prompt — which may include their own card-generation instructions and/or source material. Follow their instructions exactly. If they have no specific format instructions, generate high-quality Anki flashcards where each card tests exactly one atomic concept.
-
-IMPORTANT: Respond ONLY with a raw JSON array. No markdown, no code fences, no explanation, no trailing text. Format:
-[{"front": "...", "back": "..."}, ...]
-
-The "front" is the question or prompt side. The "back" is the answer side.`,
-          messages: [{ role: 'user', content: prompt }]
+          system: 'You are a spaced repetition flashcard generator. Follow the user\'s card-generation instructions exactly. Use the create_flashcards tool to return all cards.',
+          tools: [{
+            name: 'create_flashcards',
+            description: 'Output the generated Anki flashcards',
+            input_schema: {
+              type: 'object',
+              properties: {
+                cards: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      front: { type: 'string', description: 'Question or prompt side of the card' },
+                      back:  { type: 'string', description: 'Answer side of the card' }
+                    },
+                    required: ['front', 'back']
+                  }
+                }
+              },
+              required: ['cards']
+            }
+          }],
+          tool_choice: { type: 'tool', name: 'create_flashcards' },
+          messages: [{ role: 'user', content: userMsg }]
         })
       });
 
@@ -538,32 +500,19 @@ The "front" is the question or prompt side. The "back" is the answer side.`,
       }
 
       const data = await res.json();
-      const raw = (data.content?.[0]?.text || '').trim();
 
-      // Parse — handle Claude occasionally wrapping in code fences
-      let parsed;
-      try {
-        parsed = JSON.parse(raw);
-      } catch {
-        const m = raw.match(/\[[\s\S]*\]/);
-        if (m) {
-          try { parsed = JSON.parse(m[0]); }
-          catch { throw new Error('Could not parse response as JSON. Try again or simplify your prompt.'); }
-        } else {
-          throw new Error('Unexpected response format. Try again.');
-        }
-      }
+      // Extract tool_use block — guaranteed by tool_choice: forced
+      const toolBlock = data.content?.find(b => b.type === 'tool_use' && b.name === 'create_flashcards');
+      if (!toolBlock) throw new Error('No tool response returned. Try again.');
 
-      if (!Array.isArray(parsed) || parsed.length === 0) {
-        throw new Error('No cards returned. Check your prompt and try again.');
-      }
+      const valid = (toolBlock.input?.cards || [])
+        .filter(c => c && typeof c.front === 'string' && typeof c.back === 'string');
 
-      const valid = parsed.filter(c => c && typeof c.front === 'string' && typeof c.back === 'string');
-      if (valid.length === 0) throw new Error('Cards had unexpected format. Try again.');
+      if (!valid.length) throw new Error('No cards returned. Check your content and try again.');
 
       cards = valid;
       renderCards();
-      setStatus(`${cards.length} card${cards.length !== 1 ? 's' : ''} generated. Delete any you don't want, then export.`, 'success');
+      setStatus(`${cards.length} card${cards.length !== 1 ? 's' : ''} generated.`, 'success');
 
     } catch (err) {
       setStatus(err.message, 'error');
@@ -573,12 +522,10 @@ The "front" is the question or prompt side. The "back" is the answer side.`,
     }
   }
 
-  // ── Export TSV ─────────────────────────────────────────────────────────
+  // ── Export TSV ───────────────────────────────────────────────────────────
   function exportTSV() {
-    if (cards.length === 0) return;
+    if (!cards.length) return;
 
-    // Anki TSV: Front<TAB>Back, one card per line
-    // Strip tabs and newlines from fields to keep format clean
     const tsv = cards.map(c => {
       const front = c.front.replace(/\t/g, '    ').replace(/\r?\n/g, '<br>');
       const back  = c.back .replace(/\t/g, '    ').replace(/\r?\n/g, '<br>');
@@ -598,9 +545,11 @@ The "front" is the question or prompt side. The "back" is the answer side.`,
     setStatus(`Exported ${cards.length} cards as anki-cards.tsv`, 'success');
   }
 
-  // ── Keyboard shortcut: Ctrl/Cmd+Enter to generate ─────────────────────
-  promptEl.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') generateCards();
+  // ── Ctrl/Cmd+Enter to generate ───────────────────────────────────────────
+  [document.getElementById('instructions'), contentEl].forEach(el => {
+    el.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') generateCards();
+    });
   });
 </script>
 </body>
