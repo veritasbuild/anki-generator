@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anki Card Generator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f0f2f5;
+      color: #1a1a1a;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 0 24px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    header h1 { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.01em; }
+    .header-right { font-size: 0.75rem; color: #64748b; }
+
+    /* ── Main layout ── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Left panel ── */
+    .left {
+      width: 44%;
+      min-width: 360px;
+      background: #fff;
+      border-right: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 14px;
+      overflow-y: auto;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field-row { display: flex; align-items: center; justify-content: space-between; }
+
+    label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .hint { font-size: 0.72rem; color: #94a3b8; }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 7px;
+      font-size: 0.87rem;
+      font-family: monospace;
+      color: #0f172a;
+      transition: border-color 0.15s;
+      background: #f8fafc;
+    }
+    input[type="password"]:focus { outline: none; border-color: #6366f1; background: #fff; }
+
+    .model-row {
+      display: flex;
+      gap: 8px;
+    }
+    .model-btn {
+      flex: 1;
+      padding: 6px 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      background: #f8fafc;
+      font-size: 0.78rem;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .model-btn.active {
+      border-color: #6366f1;
+      background: #eef2ff;
+      color: #4338ca;
+      font-weight: 600;
+    }
+
+    .prompt-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    textarea {
+      flex: 1;
+      width: 100%;
+      min-height: 280px;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 7px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      line-height: 1.6;
+      resize: vertical;
+      color: #0f172a;
+      transition: border-color 0.15s;
+      background: #f8fafc;
+    }
+    textarea:focus { outline: none; border-color: #6366f1; background: #fff; }
+    textarea::placeholder { color: #94a3b8; }
+
+    .generate-btn {
+      width: 100%;
+      padding: 11px;
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .generate-btn:hover:not(:disabled) { background: #4338ca; }
+    .generate-btn:active:not(:disabled) { transform: scale(0.99); }
+    .generate-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    .status {
+      font-size: 0.78rem;
+      color: #64748b;
+      text-align: center;
+      min-height: 18px;
+      line-height: 1.4;
+    }
+    .status.error { color: #dc2626; }
+    .status.success { color: #16a34a; }
+
+    /* ── Right panel ── */
+    .right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .cards-header {
+      padding: 14px 22px;
+      border-bottom: 1px solid #e2e8f0;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .cards-header h2 { font-size: 0.88rem; font-weight: 600; color: #0f172a; }
+    .card-meta { display: flex; align-items: center; gap: 12px; }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: #e0e7ff;
+      color: #4338ca;
+      padding: 2px 9px;
+      border-radius: 999px;
+    }
+    .clear-btn {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .clear-btn:hover { color: #dc2626; background: #fef2f2; }
+
+    .cards-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      gap: 10px;
+      padding: 40px;
+      text-align: center;
+    }
+    .empty-icon { font-size: 2.5rem; }
+    .empty-state p { font-size: 0.85rem; line-height: 1.6; }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px 14px 14px 16px;
+      display: flex;
+      gap: 10px;
+      transition: box-shadow 0.15s;
+    }
+    .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+    .card-body { flex: 1; min-width: 0; }
+
+    .card-num {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .card-front {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #0f172a;
+      line-height: 1.5;
+      margin-bottom: 8px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .divider {
+      height: 1px;
+      background: #f1f5f9;
+      margin-bottom: 8px;
+    }
+
+    .card-back {
+      font-size: 0.83rem;
+      color: #475569;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .delete-btn {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #cbd5e1;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+      align-self: flex-start;
+      margin-top: 2px;
+    }
+    .delete-btn:hover { color: #dc2626; background: #fef2f2; }
+
+    .cards-footer {
+      padding: 14px 22px;
+      border-top: 1px solid #e2e8f0;
+      background: #fff;
+      flex-shrink: 0;
+    }
+
+    .export-btn {
+      width: 100%;
+      padding: 11px;
+      background: #059669;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+    .export-btn:hover:not(:disabled) { background: #047857; }
+    .export-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    /* ── Spinner ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Anki Card Generator</h1>
+  <span class="header-right">Powered by Claude · Export to Anki via .tsv</span>
+</header>
+
+<div class="main">
+
+  <!-- Left: Input panel -->
+  <div class="left">
+
+    <div class="field">
+      <div class="field-row">
+        <label for="api-key">Anthropic API Key</label>
+        <span class="hint">Stored locally only</span>
+      </div>
+      <input type="password" id="api-key" placeholder="sk-ant-api03-…">
+    </div>
+
+    <div class="field">
+      <label>Model</label>
+      <div class="model-row">
+        <button class="model-btn active" data-model="claude-opus-4-6" onclick="selectModel(this)">Opus 4.6</button>
+        <button class="model-btn" data-model="claude-sonnet-4-6" onclick="selectModel(this)">Sonnet 4.6</button>
+        <button class="model-btn" data-model="claude-haiku-4-5-20251001" onclick="selectModel(this)">Haiku 4.5</button>
+      </div>
+    </div>
+
+    <div class="field prompt-wrap">
+      <div class="field-row">
+        <label for="prompt">Your Spaced Repetition Prompt</label>
+        <span class="hint" id="char-count">0 chars</span>
+      </div>
+      <textarea
+        id="prompt"
+        placeholder="Paste your prompt here — include your card-generation instructions and the source material you want turned into flashcards.
+
+Example:
+Create Anki flashcards from the following notes. Each card should test one atomic fact. Front: a question or cloze prompt. Back: the concise answer.
+
+[paste your content below]
+…"
+      ></textarea>
+    </div>
+
+    <button class="generate-btn" id="generate-btn" onclick="generateCards()">
+      Generate Cards
+    </button>
+    <div class="status" id="status"></div>
+
+  </div>
+
+  <!-- Right: Cards panel -->
+  <div class="right">
+
+    <div class="cards-header">
+      <h2>Generated Cards</h2>
+      <div class="card-meta">
+        <span class="badge" id="card-count">0 cards</span>
+        <button class="clear-btn" onclick="clearAll()">Clear all</button>
+      </div>
+    </div>
+
+    <div class="cards-list" id="cards-list">
+      <div class="empty-state">
+        <div class="empty-icon">🃏</div>
+        <p>Cards will appear here after generation.<br>Delete any you don't want, then export.</p>
+      </div>
+    </div>
+
+    <div class="cards-footer">
+      <button class="export-btn" id="export-btn" onclick="exportTSV()" disabled>
+        ↓ Export as .tsv for Anki
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────
+  let cards = [];
+  let selectedModel = 'claude-opus-4-6';
+
+  // ── Persist API key ────────────────────────────────────────────────────
+  const keyInput = document.getElementById('api-key');
+  keyInput.value = localStorage.getItem('anki_api_key') || '';
+  keyInput.addEventListener('input', () => {
+    localStorage.setItem('anki_api_key', keyInput.value);
+  });
+
+  // ── Char counter ───────────────────────────────────────────────────────
+  const promptEl = document.getElementById('prompt');
+  promptEl.addEventListener('input', () => {
+    document.getElementById('char-count').textContent =
+      promptEl.value.length.toLocaleString() + ' chars';
+  });
+
+  // ── Model selection ────────────────────────────────────────────────────
+  function selectModel(btn) {
+    document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedModel = btn.dataset.model;
+  }
+
+  // ── Status ─────────────────────────────────────────────────────────────
+  function setStatus(msg, type = '') {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = 'status' + (type ? ' ' + type : '');
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────
+  function renderCards() {
+    const list = document.getElementById('cards-list');
+    const count = cards.length;
+
+    document.getElementById('card-count').textContent =
+      count + (count === 1 ? ' card' : ' cards');
+    document.getElementById('export-btn').disabled = count === 0;
+
+    if (count === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🃏</div>
+          <p>Cards will appear here after generation.<br>Delete any you don't want, then export.</p>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = cards.map((card, i) => `
+      <div class="card" id="card-${i}">
+        <div class="card-body">
+          <div class="card-num">Card ${i + 1}</div>
+          <div class="card-front">${escHtml(card.front)}</div>
+          <div class="divider"></div>
+          <div class="card-back">${escHtml(card.back)}</div>
+        </div>
+        <button class="delete-btn" onclick="deleteCard(${i})" title="Delete">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── Delete / clear ─────────────────────────────────────────────────────
+  function deleteCard(i) {
+    cards.splice(i, 1);
+    renderCards();
+    if (cards.length > 0) {
+      setStatus(`${cards.length} card${cards.length !== 1 ? 's' : ''} remaining.`, 'success');
+    } else {
+      setStatus('');
+    }
+  }
+
+  function clearAll() {
+    if (cards.length === 0) return;
+    if (!confirm(`Delete all ${cards.length} cards?`)) return;
+    cards = [];
+    renderCards();
+    setStatus('');
+  }
+
+  // ── Generate ───────────────────────────────────────────────────────────
+  async function generateCards() {
+    const apiKey = keyInput.value.trim();
+    const prompt = promptEl.value.trim();
+    const btn = document.getElementById('generate-btn');
+
+    if (!apiKey) { setStatus('Enter your Anthropic API key first.', 'error'); return; }
+    if (!prompt) { setStatus('Paste your prompt / content first.', 'error'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div>Generating…';
+    setStatus('Calling Claude API…');
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: selectedModel,
+          max_tokens: 8192,
+          system: `You are a precise spaced repetition flashcard generator.
+
+The user will give you their prompt — which may include their own card-generation instructions and/or source material. Follow their instructions exactly. If they have no specific format instructions, generate high-quality Anki flashcards where each card tests exactly one atomic concept.
+
+IMPORTANT: Respond ONLY with a raw JSON array. No markdown, no code fences, no explanation, no trailing text. Format:
+[{"front": "...", "back": "..."}, ...]
+
+The "front" is the question or prompt side. The "back" is the answer side.`,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error?.message || `API error ${res.status}`);
+      }
+
+      const data = await res.json();
+      const raw = (data.content?.[0]?.text || '').trim();
+
+      // Parse — handle Claude occasionally wrapping in code fences
+      let parsed;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        const m = raw.match(/\[[\s\S]*\]/);
+        if (m) {
+          try { parsed = JSON.parse(m[0]); }
+          catch { throw new Error('Could not parse response as JSON. Try again or simplify your prompt.'); }
+        } else {
+          throw new Error('Unexpected response format. Try again.');
+        }
+      }
+
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        throw new Error('No cards returned. Check your prompt and try again.');
+      }
+
+      const valid = parsed.filter(c => c && typeof c.front === 'string' && typeof c.back === 'string');
+      if (valid.length === 0) throw new Error('Cards had unexpected format. Try again.');
+
+      cards = valid;
+      renderCards();
+      setStatus(`${cards.length} card${cards.length !== 1 ? 's' : ''} generated. Delete any you don't want, then export.`, 'success');
+
+    } catch (err) {
+      setStatus(err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Generate Cards';
+    }
+  }
+
+  // ── Export TSV ─────────────────────────────────────────────────────────
+  function exportTSV() {
+    if (cards.length === 0) return;
+
+    // Anki TSV: Front<TAB>Back, one card per line
+    // Strip tabs and newlines from fields to keep format clean
+    const tsv = cards.map(c => {
+      const front = c.front.replace(/\t/g, '    ').replace(/\r?\n/g, '<br>');
+      const back  = c.back .replace(/\t/g, '    ').replace(/\r?\n/g, '<br>');
+      return front + '\t' + back;
+    }).join('\n');
+
+    const blob = new Blob(['\ufeff' + tsv], { type: 'text/tab-separated-values;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'anki-cards.tsv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    setStatus(`Exported ${cards.length} cards as anki-cards.tsv`, 'success');
+  }
+
+  // ── Keyboard shortcut: Ctrl/Cmd+Enter to generate ─────────────────────
+  promptEl.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') generateCards();
+  });
+</script>
+</body>
+</html>
